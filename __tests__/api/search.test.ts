@@ -1,11 +1,14 @@
 import { describe, it, expect, vi } from 'vitest'
 
+const { mockSafeFetch } = vi.hoisted(() => ({ mockSafeFetch: vi.fn() }))
+
 vi.mock('@/sanity/client', () => ({
+  isSanityConfigured: true,
+  safeFetch: mockSafeFetch,
   client: { fetch: vi.fn() },
 }))
 
 import { POST } from '@/app/api/search/route'
-import { client } from '@/sanity/client'
 import { NextRequest } from 'next/server'
 
 describe('POST /api/search', () => {
@@ -20,7 +23,7 @@ describe('POST /api/search', () => {
 
   it('returns results for valid query', async () => {
     const mockPosts = [{ title: 'Game Design Basics', slug: 'basics' }]
-    vi.mocked(client.fetch).mockResolvedValue(mockPosts as any)
+    mockSafeFetch.mockResolvedValue(mockPosts)
 
     const req = new NextRequest('http://localhost/api/search', {
       method: 'POST',

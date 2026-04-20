@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { client } from '@/sanity/client'
+import { safeFetch } from '@/sanity/client'
 import { allPostsQuery, featuredPostQuery } from '@/sanity/queries'
 import { PostCard } from '@/components/blog/post-card'
 import { NewsletterForm } from '@/components/ui/newsletter-form'
@@ -11,8 +11,8 @@ export const revalidate = 60
 
 export default async function HomePage() {
   const [featured, posts] = await Promise.all([
-    client.fetch(featuredPostQuery),
-    client.fetch(allPostsQuery),
+    safeFetch<any>(featuredPostQuery, {}, null),
+    safeFetch<any[]>(allPostsQuery, {}, []),
   ])
 
   const latestPosts = posts.slice(1, 7) // exclude featured

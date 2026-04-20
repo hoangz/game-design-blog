@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { client } from '@/sanity/client'
+import { safeFetch } from '@/sanity/client'
 import { postsByCategoryQuery, categoryBySlugQuery } from '@/sanity/queries'
 import { PostCard } from '@/components/blog/post-card'
 
@@ -12,7 +12,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const category = await client.fetch(categoryBySlugQuery, { slug })
+  const category = await safeFetch<any>(categoryBySlugQuery, { slug }, null)
   if (!category) return {}
   return { title: category.title, description: category.description }
 }
@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CategoryPage({ params }: Props) {
   const { slug } = await params
   const [category, posts] = await Promise.all([
-    client.fetch(categoryBySlugQuery, { slug }),
-    client.fetch(postsByCategoryQuery, { slug }),
+    safeFetch<any>(categoryBySlugQuery, { slug }, null),
+    safeFetch<any[]>(postsByCategoryQuery, { slug }, []),
   ])
   if (!category) notFound()
 

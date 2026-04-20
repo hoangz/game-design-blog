@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { client } from '@/sanity/client'
+import { safeFetch } from '@/sanity/client'
 import { postBySlugQuery, allPostSlugsQuery } from '@/sanity/queries'
 import { PostHeader } from '@/components/blog/post-header'
 import { PortableTextRenderer } from '@/components/blog/portable-text-renderer'
@@ -13,20 +13,20 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const slugs = await client.fetch(allPostSlugsQuery)
-  return slugs.map(({ slug }: { slug: string }) => ({ slug }))
+  const slugs = await safeFetch<{ slug: string }[]>(allPostSlugsQuery, {}, [])
+  return slugs.map(({ slug }) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const post = await client.fetch(postBySlugQuery, { slug })
+  const post = await safeFetch<any>(postBySlugQuery, { slug }, null)
   if (!post) return {}
   return { title: post.title, description: post.excerpt }
 }
 
 export default async function PostPage({ params }: Props) {
   const { slug } = await params
-  const post = await client.fetch(postBySlugQuery, { slug })
+  const post = await safeFetch<any>(postBySlugQuery, { slug }, null)
   if (!post) notFound()
 
   return (

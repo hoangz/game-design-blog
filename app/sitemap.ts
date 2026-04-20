@@ -1,11 +1,11 @@
 import { MetadataRoute } from 'next'
-import { client } from '@/sanity/client'
+import { safeFetch } from '@/sanity/client'
 import { allPostSlugsQuery } from '@/sanity/queries'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://yourdomain.com'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const slugs: { slug: string; publishedAt: string }[] = await client.fetch(allPostSlugsQuery)
+  const slugs: { slug: string; publishedAt: string }[] = await safeFetch(allPostSlugsQuery, {}, [])
 
   const postUrls = slugs.map(({ slug, publishedAt }) => ({
     url: `${BASE_URL}/bai-viet/${slug}`,
