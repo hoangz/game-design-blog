@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Menu, X, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { SearchBar } from '@/components/ui/search-bar'
 
 const navLinks = [
   { href: '/bai-viet', label: 'Bài Viết' },
@@ -72,17 +73,7 @@ export function Header() {
         </div>
       )}
 
-      {/* Search overlay — populated in Task 14 */}
-      {searchOpen && (
-        <div className="border-t border-[var(--border)] bg-[var(--background)] px-4 py-3">
-          <input
-            autoFocus
-            placeholder="Tìm bài viết..."
-            className="w-full bg-[var(--muted)] text-sm px-3 py-2 rounded-md outline-none text-white placeholder:text-[var(--muted-foreground)]"
-            onKeyDown={(e) => e.key === 'Escape' && setSearchOpen(false)}
-          />
-        </div>
-      )}
+      {searchOpen && <SearchBar onClose={() => setSearchOpen(false)} />}
     </header>
   )
 }
